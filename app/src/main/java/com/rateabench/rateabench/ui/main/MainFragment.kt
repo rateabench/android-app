@@ -18,6 +18,8 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.clustering.ClusterManager
+import com.rateabench.rateabench.BenchRender
 import com.rateabench.rateabench.models.Bench
 import kotlinx.android.synthetic.main.main_fragment.*
 import timber.log.Timber
@@ -28,6 +30,7 @@ class MainFragment : Fragment(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private lateinit var viewModel: MainViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var clusterManager: ClusterManager<Bench>
 
     companion object {
         fun newInstance() = MainFragment()
@@ -36,12 +39,16 @@ class MainFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+        clusterManager = ClusterManager(context, map)
+        clusterManager.renderer = BenchRender(context, map, clusterManager)
+        map.setOnCameraIdleListener(clusterManager)
+        map.setOnMarkerClickListener(clusterManager)
         setupMap()
-        viewModel.fetchBenches()
 
+        viewModel.fetchBenches()
         val benchesObserver = Observer<List<Bench>> { benches ->
-            // Update the UI, in this case, a TextView.
-            Timber.i(benches.toString())
+            clusterManager.addItems(benches)
+            clusterManager.cluster()
         }
         viewModel.benchesLiveData.observe(this, benchesObserver)
     }
