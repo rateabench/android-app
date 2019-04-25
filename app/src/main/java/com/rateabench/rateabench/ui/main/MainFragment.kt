@@ -18,8 +18,10 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.maps.android.clustering.ClusterManager
 import com.rateabench.rateabench.BenchRender
+import com.rateabench.rateabench.R
 import com.rateabench.rateabench.models.Bench
 import kotlinx.android.synthetic.main.main_fragment.*
 import timber.log.Timber
@@ -31,6 +33,23 @@ class MainFragment : Fragment(), OnMapReadyCallback {
     private lateinit var viewModel: MainViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var clusterManager: ClusterManager<Bench>
+    private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+        when (item.itemId) {
+            R.id.navigation_home -> {
+                Timber.d("navigation_home")
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_dashboard -> {
+                Timber.d("navigation_dashboard")
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_notifications -> {
+                Timber.d("navigation_notifications")
+                return@OnNavigationItemSelectedListener true
+            }
+        }
+        false
+    }
 
     companion object {
         fun newInstance() = MainFragment()
@@ -100,6 +119,8 @@ class MainFragment : Fragment(), OnMapReadyCallback {
         }
         mapview.onCreate(savedInstanceState)
         mapview.getMapAsync(this)
+        val navView: BottomNavigationView = requireActivity().findViewById(R.id.nav_view)
+        navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
     }
 
     override fun onStart() {

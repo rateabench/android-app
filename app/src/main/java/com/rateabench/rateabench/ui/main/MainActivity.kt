@@ -1,8 +1,8 @@
-package com.rateabench.rateabench
+package com.rateabench.rateabench.ui.main
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.rateabench.rateabench.ui.main.MainFragment
+import androidx.appcompat.app.AppCompatActivity
+import com.rateabench.rateabench.R
 
 class MainActivity : AppCompatActivity() {
 
