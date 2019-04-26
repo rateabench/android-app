@@ -18,55 +18,39 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.maps.android.clustering.ClusterManager
-import com.rateabench.rateabench.BenchRender
+import com.rateabench.rateabench.BenchRenderer
 import com.rateabench.rateabench.R
+import com.rateabench.rateabench.Utility
 import com.rateabench.rateabench.models.Bench
 import kotlinx.android.synthetic.main.main_fragment.*
 import timber.log.Timber
 
 
-class MainFragment : Fragment(), OnMapReadyCallback {
+class MapFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
     private lateinit var viewModel: MainViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var clusterManager: ClusterManager<Bench>
-    private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
-        when (item.itemId) {
-            R.id.navigation_home -> {
-                Timber.d("navigation_home")
-                return@OnNavigationItemSelectedListener true
-            }
-            R.id.navigation_dashboard -> {
-                Timber.d("navigation_dashboard")
-                return@OnNavigationItemSelectedListener true
-            }
-            R.id.navigation_notifications -> {
-                Timber.d("navigation_notifications")
-                return@OnNavigationItemSelectedListener true
-            }
-        }
-        false
-    }
+
 
     companion object {
-        fun newInstance() = MainFragment()
+        fun newInstance() = MapFragment()
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         clusterManager = ClusterManager(context, map)
-        clusterManager.renderer = BenchRender(context, map, clusterManager)
+        clusterManager.renderer = BenchRenderer(context, map, clusterManager)
         map.setOnCameraIdleListener(clusterManager)
         map.setOnMarkerClickListener(clusterManager)
         setupMap()
 
         viewModel.fetchBenches()
         val benchesObserver = Observer<List<Bench>> { benches ->
-            clusterManager.addItems(benches)
+            clusterManager.addItems(benches.filterNotNull())
             clusterManager.cluster()
         }
         viewModel.benchesLiveData.observe(this, benchesObserver)
@@ -108,7 +92,7 @@ class MainFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(com.rateabench.rateabench.R.layout.main_fragment, container, false)
+        return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -118,9 +102,11 @@ class MainFragment : Fragment(), OnMapReadyCallback {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(it)
         }
         mapview.onCreate(savedInstanceState)
+        if (!Utility.isNetworkAvailable(requireContext())) {
+            Toast.makeText(requireContext(), R.string.no_internet, Toast.LENGTH_LONG).show()
+        }
         mapview.getMapAsync(this)
-        val navView: BottomNavigationView = requireActivity().findViewById(R.id.nav_view)
-        navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
+
     }
 
     override fun onStart() {

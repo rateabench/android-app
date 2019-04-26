@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">RateABench</string>
-    <string name="title_activity_maps">Map</string>
     <string name="title_activity_bottom">BottomActivity</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
+    <string name="title_benches">Benches</string>
+    <string name="title_map">Map</string>
     <string name="title_notifications">Notifications</string>
+    <string name="no_internet">No internet</string>
+    <string name="try_again">Try again</string>
+    <string name="exit">Exit</string>
 </resources>

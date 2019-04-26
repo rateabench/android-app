@@ -11,8 +11,8 @@ import timber.log.Timber
 
 object ApiFactory {
 
-    //    private val API_URL = "http://192.168.73.121:3000/"
-    private val API_URL = "http://my-json-server.typicode.com/schurmann/json-server/"
+    private val API_URL = "https://www.jsonstore.io/84955eed692c2b53d9de796489c40878631ec50e4beeb12af9c1bafefe09e0cb/"
+    //    private val API_URL = "http://my-json-server.typicode.com/schurmann/json-server/"
     //Creating Auth Interceptor to add api_key query in front of all the requests.
     private val authInterceptor = Interceptor { chain ->
         //        val newUrl = chain.request().url().newBuilder().addQueryParameter("api_key", AppConstants.tmdbApiKey).build()

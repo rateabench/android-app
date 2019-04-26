@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools" android:id="@+id/nav_graph"
+            app:startDestination="@id/mapFragment">
+
+    <fragment android:id="@+id/mapFragment" android:name="com.rateabench.rateabench.ui.main.MapFragment"
+              android:label="main_fragment" tools:layout="@layout/main_fragment">
+        <action android:id="@+id/action_mapFragment_to_benches" app:destination="@id/placeholder"/>
+    </fragment>
+    <fragment android:id="@+id/placeholder">
+        <action android:id="@+id/action_benches_to_mapFragment" app:destination="@id/mapFragment"/>
+    </fragment>
+</navigation>

@@ -9,7 +9,7 @@ class BenchRepository(private val api: ApiService) : BaseRepository() {
         val benches = safeApiCall(
             call = { api.getBenchesAsync().await() }, errorMessage = "Error fetching benches"
         )
-        return benches
+        return benches?.result
     }
 
     suspend fun getBench(id: Int): Bench? {

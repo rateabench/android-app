@@ -10,3 +10,5 @@ data class Bench(val id: Int, val name: String, val lat: Double, val lng: Double
 
     override fun getPosition() = LatLng(lat, lng)
 }
+
+data class BenchResponse(val result: List<Bench>, val ok: String)
