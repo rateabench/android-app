@@ -2,9 +2,11 @@ package com.rateabench.rateabench.ui.main
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.os.Vibrator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,10 +35,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var viewModel: MainViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var clusterManager: ClusterManager<Bench>
+    private lateinit var vibrator: Vibrator
 
 
     companion object {
-        fun newInstance() = MapFragment()
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
 
@@ -44,13 +46,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         map = googleMap
         clusterManager = ClusterManager(context, map)
         clusterManager.renderer = BenchRenderer(context, map, clusterManager)
+        clusterManager.setOnClusterItemClickListener {
+            viewModel.currentBench.postValue(it)
+            //            vibrator.vibrate(50)
+            true
+        }
         map.setOnCameraIdleListener(clusterManager)
         map.setOnMarkerClickListener(clusterManager)
         setupMap()
 
         viewModel.fetchBenches()
         val benchesObserver = Observer<List<Bench>> { benches ->
-            clusterManager.addItems(benches.filterNotNull())
+            clusterManager.addItems(benches.filterNotNull().subList(0, 10))
             clusterManager.cluster()
         }
         viewModel.benchesLiveData.observe(this, benchesObserver)
@@ -97,16 +104,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        activity?.let {
+            viewModel = ViewModelProviders.of(it).get(MainViewModel::class.java)
+        }
         context?.let {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(it)
         }
+        vibrator = requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         mapview.onCreate(savedInstanceState)
         if (!Utility.isNetworkAvailable(requireContext())) {
             Toast.makeText(requireContext(), R.string.no_internet, Toast.LENGTH_LONG).show()
         }
         mapview.getMapAsync(this)
-
     }
 
     override fun onStart() {

@@ -17,4 +17,6 @@ class BenchRenderer(context: Context?, map: GoogleMap, clusterManager: ClusterMa
     }
 
     override fun shouldRenderAsCluster(cluster: Cluster<Bench>) = cluster.size > 9
+
+
 }
