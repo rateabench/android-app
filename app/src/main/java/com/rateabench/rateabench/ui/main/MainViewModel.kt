@@ -7,18 +7,23 @@ import com.rateabench.rateabench.ApiFactory
 import com.rateabench.rateabench.api.BenchRepository
 import com.rateabench.rateabench.models.Bench
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class MainViewModel : ViewModel() {
 
     private val repository: BenchRepository = BenchRepository(ApiFactory.benchService)
-    val currentBench = MutableLiveData<Bench>()
+    val benchesInSight = MutableLiveData<List<Bench>>()
     val benchesLiveData = MutableLiveData<List<Bench>>()
 
+    init {
+        fetchBenches()
+    }
+
     fun fetchBenches() {
+        Timber.d("Fetching benches")
         viewModelScope.launch {
             val benches = repository.getBenches()
             benchesLiveData.postValue(benches)
         }
     }
-
 }

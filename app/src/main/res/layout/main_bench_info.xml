@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffffff"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:id="@+id/dragView">
+    <ListView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/viewable_benches_list"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/list_barrier"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    <ImageView
+            android:layout_width="@dimen/slide_state_down_height"
+            android:layout_height="@dimen/slide_state_down_height"
+            android:id="@+id/selected_bench_imageview"
+            app:srcCompat="@drawable/ic_bench"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+    />
+    <androidx.constraintlayout.widget.Barrier
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_barrier"
+            app:constraint_referenced_ids="selected_bench, selected_bench_imageview"
+            app:barrierDirection="bottom" tools:layout_editor_absoluteY="94dp"/>
+    <TextView
+            android:text="TextView"
+            android:id="@+id/selected_bench"
+            app:layout_constraintTop_toTopOf="parent" android:layout_width="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/ratingBar" app:layout_constraintStart_toStartOf="@+id/guideline"
+            android:layout_marginStart="8dp"/>
+    <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/ratingBar"
+            app:layout_constraintBottom_toTopOf="@+id/list_barrier"
+            style="?attr/ratingBarStyleSmall" android:numStars="5"
+            android:rating="4"
+            android:stepSize="1"/>
+    <androidx.constraintlayout.widget.Guideline android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                                android:id="@+id/guideline"
+                                                android:orientation="vertical"
+                                                app:layout_constraintGuide_percent="0.1970803"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

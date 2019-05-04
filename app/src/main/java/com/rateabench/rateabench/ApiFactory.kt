@@ -22,7 +22,7 @@ object ApiFactory {
     }
     private val logInterceptor = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { message ->
         Timber.tag("OkHttp").d(message)
-    }).setLevel(HttpLoggingInterceptor.Level.BODY)
+    }).setLevel(HttpLoggingInterceptor.Level.NONE)
 
     private val apiClient =
         OkHttpClient().newBuilder().addInterceptor(authInterceptor).addInterceptor(logInterceptor).build()

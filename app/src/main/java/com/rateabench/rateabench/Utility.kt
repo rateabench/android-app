@@ -2,6 +2,7 @@ package com.rateabench.rateabench
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.util.DisplayMetrics
 
 
 class Utility {
@@ -12,5 +13,16 @@ class Utility {
             val activeNetwork = connectivityManager.activeNetworkInfo
             return activeNetwork != null && activeNetwork.isConnectedOrConnecting
         }
+
+
+        fun convertDpToPixel(context: Context, dp: Float): Float {
+            return dp * (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+        }
+
+        fun convertPixelsToDp(context: Context, px: Float): Float {
+            return px / (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+        }
+
+
     }
 }
