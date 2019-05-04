@@ -85,7 +85,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     // Filter in respect to the space slideUpPanel take up
     private fun filterBenchesInSight() {
         val cameraBounds = map.projection.visibleRegion.latLngBounds
-        val panelHeight = Utility.convertDpToPixel(requireContext(), 80f)
+        val panelHeight = resources.getDimension(R.dimen.slide_state_down_height)
         val SW = map.projection.fromScreenLocation(Point(0, (mapview.measuredHeight - panelHeight).toInt()))
         val bounds = LatLngBounds(SW, cameraBounds.northeast)
         viewModel.benchesInSight.postValue(allBenches.filter { bounds.contains(LatLng(it.lat, it.lng)) })
