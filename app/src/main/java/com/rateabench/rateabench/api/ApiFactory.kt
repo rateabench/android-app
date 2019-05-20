@@ -10,20 +10,18 @@ import timber.log.Timber
 
 object ApiFactory {
 
-    private val API_URL = "http://127.0.0.1:8080/v1/"
+    private val API_URL = "http://192.168.1.248:8080/v1/"
     //Creating Auth Interceptor to add api_key query in front of all the requests.
     private val authInterceptor = Interceptor { chain ->
-
         chain.proceed(chain.request())
     }
     private val logInterceptor = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { message ->
         Timber.tag("OkHttp").d(message)
     }).setLevel(HttpLoggingInterceptor.Level.NONE)
 
-    private val apiClient =
-        OkHttpClient().newBuilder().addInterceptor(authInterceptor).addInterceptor(
-            logInterceptor
-        ).build()
+    private val apiClient = OkHttpClient().newBuilder().addInterceptor(authInterceptor).addInterceptor(
+        logInterceptor
+    ).build()
     val benchService: ApiService = retrofit().create(ApiService::class.java)
 
 
