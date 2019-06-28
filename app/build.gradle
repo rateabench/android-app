@@ -4,6 +4,27 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+static def getIP() {
+    InetAddress result = null
+    Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces()
+    while (interfaces.hasMoreElements()) {
+        NetworkInterface anInterface = interfaces.nextElement()
+        if (anInterface.displayName.contains("docker")) continue
+        Enumeration<InetAddress> addresses = anInterface.getInetAddresses()
+        while (addresses.hasMoreElements()) {
+            InetAddress address = addresses.nextElement()
+            if (!address.isLoopbackAddress()) {
+                if (address.isSiteLocalAddress()) {
+                    return address.getHostAddress()
+                } else if (result == null) {
+                    result = address
+                }
+            }
+        }
+    }
+    return (result != null ? result : InetAddress.getLocalHost()).getHostAddress()
+}
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -15,7 +36,11 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            buildConfigField 'String', 'API_URL', '\"http://' + getIP() + ':8080/v1/\"'
+        }
         release {
+            buildConfigField 'String', 'API_URL', '\"http://www.prod.com/\"'
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -26,7 +51,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'androidx.core:core-ktx:1.0.1'
+    implementation 'androidx.core:core-ktx:1.0.2'
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
     implementation 'com.google.maps.android:android-maps-utils:0.5'
@@ -34,12 +59,13 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
     implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
+    implementation "com.github.bumptech.glide:glide:4.9.0"
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
     implementation 'net.sharewire:google-maps-clustering:0.1.3'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0-alpha04'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.1.0-alpha04'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha01'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-alpha01'
     implementation 'com.sothree.slidinguppanel:library:3.4.0'
     implementation 'android.arch.navigation:navigation-fragment:1.0.0'
     implementation 'android.arch.navigation:navigation-ui:1.0.0'

@@ -1,6 +1,7 @@
 package com.rateabench.rateabench.api
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.rateabench.rateabench.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -10,7 +11,7 @@ import timber.log.Timber
 
 object ApiFactory {
 
-    private val API_URL = "http://192.168.1.248:8080/v1/"
+    private val API_URL = BuildConfig.API_URL
     //Creating Auth Interceptor to add api_key query in front of all the requests.
     private val authInterceptor = Interceptor { chain ->
         chain.proceed(chain.request())
