@@ -1,22 +1,18 @@
 package com.rateabench.rateabench.api
 
+import androidx.lifecycle.MutableLiveData
 import com.rateabench.rateabench.models.Bench
 
 class BenchRepository(private val api: ApiService) : BaseRepository() {
 
-    suspend fun getBenches(): List<Bench>? {
+    suspend fun getBenches(benchesLiveData: MutableLiveData<Result<List<Bench>>>) {
 
-        val benches = safeApiCall(
-            call = { api.getBenchesAsync().await() }, errorMessage = "Error fetching benches"
-        )
-        return benches?.result
+        val benchesResult =
+            safeApiCall(call = { api.getBenchesAsync().await() }, errorMessage = "Error fetching benches")
+        benchesLiveData.postValue(benchesResult)
     }
 
-    suspend fun getBench(id: Int): Bench? {
-
-        val bench = safeApiCall(
-            call = { api.getBenchAsync(id).await() }, errorMessage = "Error fetching bench/$$id"
-        )
-        return bench
+    suspend fun getBench(id: Int) {
+        safeApiCall(call = { api.getBenchAsync(id).await() }, errorMessage = "Error fetching bench/$$id")
     }
 }

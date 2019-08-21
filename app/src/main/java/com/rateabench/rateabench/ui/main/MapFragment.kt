@@ -9,11 +9,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.bumptech.glide.Glide
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -21,9 +21,12 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.rateabench.rateabench.R
 import com.rateabench.rateabench.Utility
+import com.rateabench.rateabench.api.Result
 import com.rateabench.rateabench.models.Bench
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import kotlinx.android.synthetic.main.main_fragment.*
 import net.sharewire.googlemapsclustering.Cluster
 import net.sharewire.googlemapsclustering.ClusterManager
@@ -37,7 +40,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var viewModel: MainViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var clusterManager: ClusterManager<Bench>
-    private lateinit var selected_bench: TextView
+    private lateinit var sliding_layout: SlidingUpPanelLayout
     private val allBenches: MutableList<Bench> = mutableListOf()
 
 
@@ -47,7 +50,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        map.mapType = GoogleMap.MAP_TYPE_HYBRID
+        map.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.maps_style))
+
         setupMap()
         clusterManager = ClusterManager(requireContext(), map)
         clusterManager.setCallbacks(object : ClusterManager.Callbacks<Bench> {
@@ -65,7 +69,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
 
             override fun onClusterItemClick(bench: Bench): Boolean {
-                selected_bench.text = bench.toString()
+                sliding_layout.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
+                Timber.d(bench.toString())
+                Glide.with(this@MapFragment).load(bench.imageUrl)
+                    .into(requireActivity().findViewById(R.id.bench_image_view))
                 return true
             }
 
@@ -75,10 +82,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             filterBenchesInSight()
         }
 
-        viewModel.benchesLiveData.observe(this, Observer<List<Bench>> { benches ->
-            allBenches.addAll(benches.filterNotNull())
-            clusterManager.setItems(allBenches)
-            filterBenchesInSight()
+        viewModel.benchesLiveData.observe(this, Observer<Result<List<Bench>>> { res ->
+            when (res) {
+                is Result.Success -> {
+                    allBenches.addAll(res.data.filter { it.id < 5 || it.id == 298L })
+                    clusterManager.setItems(allBenches)
+                    filterBenchesInSight()
+                }
+                is Result.Error -> {
+                    Toast.makeText(requireContext(), res.customMessage, Toast.LENGTH_LONG).show()
+                }
+            }
         })
     }
 
@@ -132,7 +146,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-        selected_bench = requireActivity().findViewById(R.id.selected_bench)
+        sliding_layout = requireActivity().findViewById(R.id.sliding_layout)
+        sliding_layout.apply {
+            panelState = SlidingUpPanelLayout.PanelState.HIDDEN
+        }
         mapview.onCreate(savedInstanceState)
         if (!Utility.isNetworkAvailable(requireContext())) {
             Toast.makeText(requireContext(), R.string.no_internet, Toast.LENGTH_LONG).show()
